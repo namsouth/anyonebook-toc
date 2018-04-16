@@ -35,13 +35,14 @@ export const constantRouterMap = [
   {
     path: '',
     component: Layout,
-    redirect: 'dashboard',
+    redirect: 'book',
     children: [{
       path: 'dashboard',
       component: _import('dashboard/index'),
       name: 'dashboard',
       meta: { title: 'dashboard', icon: 'dashboard', noCache: true }
-    }]
+    }],
+    hidden: true
   },
   {
     path: '/documentation',
@@ -52,7 +53,8 @@ export const constantRouterMap = [
       component: _import('documentation/index'),
       name: 'documentation',
       meta: { title: 'documentation', icon: 'documentation', noCache: true }
-    }]
+    }],
+    hidden: true
   }
 ]
 
@@ -63,6 +65,65 @@ export default new Router({
 })
 
 export const asyncRouterMap = [
+  {
+    path: '/book',
+    component: Layout,
+    redirect: '/book/search',
+    meta: { title: 'book', icon: 'excel', roles: ['admin'] },
+    children: [{
+      path: 'search',
+      component: _import('anyonebook/book/search'),
+      name: 'book-search',
+      meta: {
+        title: 'book-search',
+        // icon: 'excel',
+        roles: ['admin'] // or you can only set roles in sub nav
+      }
+    }, {
+      path: 'form',
+      component: _import('anyonebook/book/form'),
+      name: 'book-form',
+      meta: {
+        title: 'book-form',
+        // icon: 'documentation',
+        roles: ['admin'] // or you can only set roles in sub nav
+      }
+    }]
+  },
+  {
+    path: '/page',
+    component: Layout,
+    redirect: '/page/search',
+    meta: { title: 'page', icon: 'documentation', roles: ['admin'] },
+    children: [{
+      path: 'search',
+      component: _import('anyonebook/page/search'),
+      name: 'page-search',
+      meta: {
+        title: 'page-search',
+        // icon: 'excel',
+        roles: ['admin'] // or you can only set roles in sub nav
+      }
+    }, {
+      path: 'form',
+      component: _import('anyonebook/page/form'),
+      name: 'page-form',
+      meta: {
+        title: 'page-form',
+        // icon: 'documentation',
+        roles: ['admin'] // or you can only set roles in sub nav
+      }
+    }, {
+      path: 'domain',
+      component: _import('anyonebook/page/domain'),
+      name: 'page-domain',
+      meta: {
+        title: 'page-domain',
+        // icon: 'documentation',
+        roles: ['admin'] // or you can only set roles in sub nav
+      }
+    }]
+  },
   {
     path: '/permission',
     component: Layout,
@@ -77,9 +138,9 @@ export const asyncRouterMap = [
         icon: 'lock',
         roles: ['admin'] // or you can only set roles in sub nav
       }
-    }]
+    }],
+    hidden: true
   },
-
   {
     path: '/icon',
     component: Layout,
@@ -88,7 +149,8 @@ export const asyncRouterMap = [
       component: _import('svg-icons/index'),
       name: 'icons',
       meta: { title: 'icons', icon: 'icon', noCache: true }
-    }]
+    }],
+    hidden: true
   },
 
   {
@@ -112,7 +174,8 @@ export const asyncRouterMap = [
       { path: 'count-to', component: _import('components-demo/countTo'), name: 'countTo-demo', meta: { title: 'countTo' }},
       { path: 'mixin', component: _import('components-demo/mixin'), name: 'componentMixin-demo', meta: { title: 'componentMixin' }},
       { path: 'back-to-top', component: _import('components-demo/backToTop'), name: 'backToTop-demo', meta: { title: 'backToTop' }}
-    ]
+    ],
+    hidden: true
   },
 
   {
@@ -128,7 +191,8 @@ export const asyncRouterMap = [
       { path: 'keyboard', component: _import('charts/keyboard'), name: 'keyboardChart', meta: { title: 'keyboardChart', noCache: true }},
       { path: 'line', component: _import('charts/line'), name: 'lineChart', meta: { title: 'lineChart', noCache: true }},
       { path: 'mixchart', component: _import('charts/mixChart'), name: 'mixChart', meta: { title: 'mixChart', noCache: true }}
-    ]
+    ],
+    hidden: true
   },
 
   {
@@ -160,9 +224,9 @@ export const asyncRouterMap = [
         ]
       },
       { path: 'tab/index', icon: 'tab', component: _import('example/tab/index'), name: 'tab', meta: { title: 'tab' }}
-    ]
+    ],
+    hidden: true
   },
-
   {
     path: '/form',
     component: Layout,
@@ -175,7 +239,8 @@ export const asyncRouterMap = [
     children: [
       { path: 'create-form', component: _import('form/create'), name: 'createForm', meta: { title: 'createForm', icon: 'table' }},
       { path: 'edit-form', component: _import('form/edit'), name: 'editForm', meta: { title: 'editForm', icon: 'table' }}
-    ]
+    ],
+    hidden: true
   },
 
   {
@@ -190,14 +255,16 @@ export const asyncRouterMap = [
     children: [
       { path: '401', component: _import('errorPage/401'), name: 'page401', meta: { title: 'page401', noCache: true }},
       { path: '404', component: _import('errorPage/404'), name: 'page404', meta: { title: 'page404', noCache: true }}
-    ]
+    ],
+    hidden: true
   },
 
   {
     path: '/error-log',
     component: Layout,
     redirect: 'noredirect',
-    children: [{ path: 'log', component: _import('errorLog/index'), name: 'errorLog', meta: { title: 'errorLog', icon: 'bug' }}]
+    children: [{ path: 'log', component: _import('errorLog/index'), name: 'errorLog', meta: { title: 'errorLog', icon: 'bug' }}],
+    hidden: true
   },
 
   {
@@ -213,7 +280,8 @@ export const asyncRouterMap = [
       { path: 'export-excel', component: _import('excel/exportExcel'), name: 'exportExcel', meta: { title: 'exportExcel' }},
       { path: 'export-selected-excel', component: _import('excel/selectExcel'), name: 'selectExcel', meta: { title: 'selectExcel' }},
       { path: 'upload-excel', component: _import('excel/uploadExcel'), name: 'uploadExcel', meta: { title: 'uploadExcel' }}
-    ]
+    ],
+    hidden: true
   },
 
   {
@@ -222,27 +290,31 @@ export const asyncRouterMap = [
     redirect: '/zip/download',
     alwaysShow: true,
     meta: { title: 'zip', icon: 'zip' },
-    children: [{ path: 'download', component: _import('zip/index'), name: 'exportZip', meta: { title: 'exportZip' }}]
+    children: [{ path: 'download', component: _import('zip/index'), name: 'exportZip', meta: { title: 'exportZip' }}],
+    hidden: true
   },
 
   {
     path: '/theme',
     component: Layout,
     redirect: 'noredirect',
-    children: [{ path: 'index', component: _import('theme/index'), name: 'theme', meta: { title: 'theme', icon: 'theme' }}]
+    children: [{ path: 'index', component: _import('theme/index'), name: 'theme', meta: { title: 'theme', icon: 'theme' }}],
+    hidden: true
   },
 
   {
     path: '/clipboard',
     component: Layout,
     redirect: 'noredirect',
-    children: [{ path: 'index', component: _import('clipboard/index'), name: 'clipboardDemo', meta: { title: 'clipboardDemo', icon: 'clipboard' }}]
+    children: [{ path: 'index', component: _import('clipboard/index'), name: 'clipboardDemo', meta: { title: 'clipboardDemo', icon: 'clipboard' }}],
+    hidden: true
   },
 
   {
     path: '/i18n',
     component: Layout,
-    children: [{ path: 'index', component: _import('i18n-demo/index'), name: 'i18n', meta: { title: 'i18n', icon: 'international' }}]
+    children: [{ path: 'index', component: _import('i18n-demo/index'), name: 'i18n', meta: { title: 'i18n', icon: 'international' }}],
+    hidden: true
   },
 
   { path: '*', redirect: '/404', hidden: true }

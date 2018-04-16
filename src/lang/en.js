@@ -46,7 +46,14 @@ export default {
     exportZip: 'Export Zip',
     theme: 'Theme',
     clipboardDemo: 'Clipboard',
-    i18n: 'I18n'
+    i18n: 'I18n',
+    book: 'Pagination Book',
+    'book-search': 'Search Book',
+    'book-form': 'Create Book',
+    page: 'Page',
+    'page-search': 'Search Page',
+    'page-form': 'Upload Page',
+    'page-domain': 'Page Domain Knowledge'
   },
   navbar: {
     logOut: 'Log Out',

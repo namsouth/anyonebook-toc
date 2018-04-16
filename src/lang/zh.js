@@ -46,7 +46,14 @@ export default {
     exportZip: 'Export Zip',
     theme: '换肤',
     clipboardDemo: 'Clipboard',
-    i18n: '国际化'
+    i18n: '国际化',
+    book: '選頁書',
+    'book-search': '找尋書本',
+    'book-form': '創建書本',
+    page: '單頁',
+    'page-search': '找尋單頁',
+    'page-form': '上載單頁',
+    'page-domain': '知識範疇'
   },
   navbar: {
     logOut: '退出登录',
