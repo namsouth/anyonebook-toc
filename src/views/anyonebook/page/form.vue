@@ -1,7 +1,7 @@
 <template>
   <!-- <article-detail :is-edit='false'></article-detail> -->
   <div style="padding:.8em">
-     <el-tabs v-model="activeName" type="border-card" >
+     <el-tabs v-model="activeName" type="border-card"  @tab-click="tabClickHandler" >
         <el-tab-pane label="Search" name="search">
           <el-row>
             <el-col  :span="4">
@@ -26,7 +26,7 @@
               <el-button 
               @click.prevent="refreshPageList"
               type="primary" plain>
-                {{$t('Refresh Page List')}}
+                <span>Refresh Page List</span>
               </el-button>
             </el-col>
           </el-row>
@@ -37,25 +37,81 @@
               <span style="font-size:0.75em;color:grey">
               [{{page.grade}}]  {{page.book_instance_code}} ( {{page.page_number}} )
               </span> <br>
+              <el-button type="primary" icon="el-icon-edit" circle @click.prevent="gotoEditPage(page)" size="mini"></el-button>
+              <el-button type="danger" icon="el-icon-delete" circle  @click.prevent="confirmDeletePage(page)" size="mini"></el-button>
               <!-- <img :src="page.image_path" alt="" style="width: 70%"> -->
 
               <!-- image viewer component -->
               <!-- <viewer :images="[page.image_path]" style="width: 70%">
                 <img v-for="src in [page.image_path]" :src="src" :key="src">
               </viewer> -->
-              <div class="viewer-wrapper" style="width: 85%">
+              <div class="viewer-wrapper">
                 <viewer :options="viewerOptions" :images="[page.image_path]"
                         class="viewer" ref="viewer"
+                         @inited="inited"
                 >
                   <template slot-scope="scope">
-                    <img v-for="src in [page.image_path]" :src="src" :key="src" style="width: 98.5%" >
+                    <figure class="images">
+                      <div class="image-wrapper" v-for="source in scope.images" :key="source">
+                        <img class="image"
+                            :src="source" :data-source="source" :alt="source.split('/').pop()"
+                        >
+                      </div>
+                    </figure>
                   </template>
                 </viewer>
-              </div>
+              </div>  
             </el-col>
           </el-row>
         </el-tab-pane>
-        <el-tab-pane label="Upload" name="upload">Upload  / Edit </el-tab-pane>
+        <el-tab-pane label="Upload" name="upload">
+          <h2>
+            {{$t(page._id?'Edit Page':'Upload Page')}}  
+            <el-button v-if="page._id" 
+            circle @click.prevent="activeName='search'" 
+            size="mini" icon="el-icon-back" ></el-button></h2> 
+            <!--
+              ["_id","codex", "grade","book_instance_code", "page_number",  "domain","area", "knowledge_unit", "learning_objective", "chapter_title","level_of_difficulty",   "file_path", "image_path","rowRef"]
+            -->
+          <el-form ref="form" :model="page" label-width="12em" size="mini" @submit.prevent="submitPageForm" >
+            <el-row>
+              <el-col v-for='field in ["codex", "grade","book_instance_code", "page_number",  "domain","area", "knowledge_unit", "learning_objective", "chapter_title","level_of_difficulty", "rowRef","parentRef"]'
+                :span="8"
+                :key="field"
+              >
+                <el-form-item 
+                    :label="field"                                                             
+                    :style="{'margin-bottom':'0.2em'}"
+                >
+                  <el-input v-model="page[field]"></el-input>
+                </el-form-item> <!--   "file_path", "image_path", -->
+              </el-col>
+               <el-col v-for='field in ["file_path", "image_path"]'
+                :span="24"
+                :key="field"
+              >
+                <el-form-item 
+                    :label="field"                                                             
+                    :style="{'margin-bottom':'0.2em'}"
+                >
+                  <el-input v-model="page[field]"></el-input>
+                </el-form-item> <!--   "file_path", "image_path", -->
+              </el-col>
+            </el-row>
+           
+           
+            <el-form-item size="large">
+              <el-button type="primary" @click.stop="submitPageForm" >{{page._id?'Update':'Create'}}</el-button>
+              <el-button @click="activeName='search'">Back</el-button>
+            </el-form-item>
+          </el-form>
+          {{page}}
+          <el-row>
+            <el-col :span="17">
+              <img :src="page.image_path" alt="" style="width:85%">
+            </el-col>
+          </el-row>
+        </el-tab-pane>
      </el-tabs>
   </div>
 </template>
@@ -70,7 +126,7 @@
  * @TODO: Upload Syllabus
  */
 import ArticleDetail from './components/ArticleDetail'
-import { db } from '../../../main'
+import { db, timestamp } from '../../../main'
 import _ from 'lodash'
 
 export default {
@@ -79,6 +135,7 @@ export default {
   data() {
     return {
       pages: [],
+      page: {},
       query_code: 'Mat_AnyOne_4A_S',
       filter: {},
       activeName: 'search',
@@ -101,6 +158,52 @@ export default {
     }
   },
   methods: {
+    inited(viewer) {
+      this.$viewer = viewer
+    },
+    tabClickHandler() {
+      this.page = {}
+    },
+    gotoEditPage(page) {
+      // Set Current Page to pass in parameter
+      this.page = page
+      // goto  another tab;
+      this.activeName = 'upload'
+    },
+    confirmDeletePage(page) {
+      this.$confirm('This will permanently delete the Page. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        // Delete Record
+        db.collection('pages').doc(page._id).delete()
+        this.$message({
+          type: 'success',
+          message: 'Delete completed'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'Delete canceled'
+        })
+      })
+    },
+    submitPageForm($evt) {
+      console.log($evt, this.page)
+      if (this.page._id) {
+        db.collection('pages').doc(this.page._id).update({
+          updated_at: timestamp,
+          ...this.page
+        }).then(submit_response => console.log(submit_response))
+      } else {
+        db.collection('pages').add({
+          updated_at: timestamp,
+          user: 'S',
+          ...this.page
+        })
+      }
+    },
     refreshPageList() {
       let pageRef = db.collection('pages').where('user', '==', 'S')
       for (const key in this.filter) {
@@ -172,7 +275,7 @@ export default {
       padding: 5px;
       .image-wrapper {
         display: inline-block;
-        width: calc(33% - 20px);
+        width: calc(83% - 20px);
         margin: 5px 5px 0 5px;
         .image {
           width: 100%;

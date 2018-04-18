@@ -35,7 +35,7 @@ export const constantRouterMap = [
   {
     path: '',
     component: Layout,
-    redirect: 'book',
+    redirect: 'page',
     children: [{
       path: 'dashboard',
       component: _import('dashboard/index'),
@@ -93,18 +93,9 @@ export const asyncRouterMap = [
   {
     path: '/page',
     component: Layout,
-    redirect: '/page/search',
+    redirect: '/page/form',
     meta: { title: 'page', icon: 'documentation', roles: ['admin'] },
     children: [{
-      path: 'search',
-      component: _import('anyonebook/page/search'),
-      name: 'page-search',
-      meta: {
-        title: 'page-search',
-        // icon: 'excel',
-        roles: ['admin'] // or you can only set roles in sub nav
-      }
-    }, {
       path: 'form',
       component: _import('anyonebook/page/form'),
       name: 'page-form',

@@ -46,7 +46,7 @@ var config = {
 Vue.use(VueFire)
 firebase.initializeApp(config)
 export const db = firebase.firestore()
-
+export const timestamp = firebase.firestore.FieldValue.serverTimestamp()
 Vue.config.productionTip = false
 
 new Vue({
